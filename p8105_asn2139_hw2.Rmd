@@ -134,6 +134,7 @@ Reformat data so that route number and route name are distinct variables. How ma
 
 ##Problem 3
 
+Loading, cleaning, and making changes to pols_df
 ```{r}
 pols_df=
   read_csv("./data/pols-month.csv") %>% 
@@ -145,8 +146,18 @@ pols_df=
     mutate(prez_gop = recode(prez_gop, "1"="gop","0"="dem")) %>% 
     rename(president=prez_gop) %>% 
     select(-prez_dem,-day)
-               
-  
 ```
 
+```{r}
+snp_df=
+  read_csv("./data/snp.csv") %>% 
+  janitor::clean_names() %>% 
+   separate("date", c("month", "day", "year"), sep="/") %>% 
+    mutate(month =recode(month,'1'="January",'2'="February", '3'="March", '4'="April",'5'="May",
+                               '6'="June",'7'="July",'8'="August",'9'="September", '10'="October",
+                               '11'="November",'12'="December")) %>% 
+    relocate(year,month) %>% 
+    select(-day)
+
+```
 
