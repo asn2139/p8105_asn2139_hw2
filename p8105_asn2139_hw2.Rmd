@@ -1,0 +1,125 @@
+---
+title: "asn2139_hw2"
+author: "Akanksha Nalatwad"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+
+```
+## Problem 1
+
+Importing Dataset
+
+```{r}
+trash_df=
+  read_xlsx(
+    "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+  sheet="Mr. Trash Wheel",
+  range=cell_cols("A:N")) %>% 
+      janitor::clean_names () %>% 
+     drop_na(dumpster) %>% 
+    mutate(
+      sports_balls= round(sports_balls),
+      sports_balls= as.integer(sports_balls)
+    )
+```
+
+Read preciptation data for 2017 and 2018
+
+```{r}
+precip_2018=
+  read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+             sheet="2018 Precipitation",
+             skip=1) %>% 
+            janitor::clean_names () %>% 
+            drop_na(month) %>% 
+            mutate(year=2018) %>% 
+            relocate(year)
+
+precip_2017=
+  read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+             sheet="2017 Precipitation",
+             skip=1
+             ) %>% 
+            janitor::clean_names() %>% 
+            drop_na(month) %>% 
+            mutate(year=2017) %>% 
+            relocate(year)
+  
+          
+
+```
+
+```{r}
+month_df=
+      tibble(
+            month=1:12,
+            month_name=month.name
+      )
+        
+precip_df=bind_rows(precip_2018, precip_2017)
+
+precip_dif= left_join(precip_df, month_df, by="month")
+      
+```
+
+This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trashwheel collects that trash, and stores it in a dumpster. The dataset contains information on year, month, and trash collected, include some specific kinds of trash. There are a total of `r nrow(trash_df)` rows in our final dataset. Additional data sheets include month precipitation data. In this dataset:
+
+* The median number of sports balls found in a dumpster in 2017 was `r trash_df %>% filter(year == 2017) %>% pull(sports_balls) %>% median()`
+* The total precipitation in 2018 was `r precip_df %>% filter(year == 2018) %>% pull(total) %>% sum()` inches.
+
+## Problem 2
+
+
+
+```{r}
+  
+transit_df=
+  read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names() %>% 
+  select (line, station_name, station_latitude, station_longitude, starts_with("route"), entry, vending, entrance_type, ada) %>% 
+  mutate(entry=ifelse(entry=="yes",TRUE,FALSE))
+```
+
+Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
+
+Answer the following questions using these data:
+
+How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here.
+
+```{r}
+distinct(transit_df,station_name)
+```
+
+How many stations are ADA compliant?
+
+```{r}
+
+var(transit_df)
+ada_compliant=
+select(transit_df, ada)
+
+  summary(ada_compliant)
+```
+468 stations are ADA compliant.
+
+What proportion of station entrances / exits without vending allow entrance?
+
+```{r}
+no_vending_df=
+filter(transit_df,vending=="NO")
+
+no_vending_entry_df=
+filter(no_vending_df,entry=="YES" )
+
+```
+
+
+
+Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
+
+
+
