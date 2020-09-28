@@ -127,10 +127,19 @@ filter(no_vending_df,entry=="YES" )
 
 ```
 
-The proportion is `r(nrow(no_vending_entry_df))/(nrow(no_vending_df))`. 
+The proportion is `r (nrow(no_vending_entry_df))/(nrow(no_vending_df))`. 
 
 
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
 
+##Problem 3
+
+```{r}
+pols_df=
+  read_csv("./data/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  as.character.Date("mon")
+  separate(pols_df,mon, c("year", "month", "day"), sep="-" )
+```
 
 
