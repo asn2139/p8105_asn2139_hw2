@@ -81,10 +81,16 @@ transit_df=
   read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
   janitor::clean_names() %>% 
   select (line, station_name, station_latitude, station_longitude, starts_with("route"), entry, vending, entrance_type, ada) %>% 
-  mutate(entry=ifelse(entry=="yes",TRUE,FALSE))
+  mutate(entry=ifelse(entry=="YES",TRUE,FALSE)) %>% 
+  mutate(vending=ifelse(vending=="YES", TRUE, FALSE))
+
 ```
 
-Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
+## Description of Dataset
+
+There are `r ncol(transit_df)` characteristics describing the `r nrow(transit_df)` entrys and exits of subway stations in NYC.
+The lines includeed in this dataset are `r unique (pull(transit_df, line))`.The routes in this data set include `r unique (pull(transit_df,route1))`. The types of entrances described are `r unique(pull(transit_df,entrance_type))`.
+
 
 Answer the following questions using these data:
 
@@ -93,6 +99,7 @@ How many distinct stations are there? Note that stations are identified both by 
 ```{r}
 distinct(transit_df,station_name)
 ```
+There are 356 station names in this dataset. 
 
 How many stations are ADA compliant?
 
@@ -112,11 +119,15 @@ What proportion of station entrances / exits without vending allow entrance?
 no_vending_df=
 filter(transit_df,vending=="NO")
 
+
 no_vending_entry_df=
 filter(no_vending_df,entry=="YES" )
 
+(nrow(no_vending_entry_df))/(nrow(no_vending_df))
+
 ```
 
+The proportion is `r(nrow(no_vending_entry_df))/(nrow(no_vending_df))`. 
 
 
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
