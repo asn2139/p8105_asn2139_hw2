@@ -89,7 +89,7 @@ transit_df=
 ## Description of Dataset
 
 There are `r ncol(transit_df)` characteristics describing the `r nrow(transit_df)` entrys and exits of subway stations in NYC.
-The lines includeed in this dataset are `r unique (pull(transit_df, line))`.The routes in this data set include `r unique (pull(transit_df,route1))`. The types of entrances described are `r unique(pull(transit_df,entrance_type))`.
+The lines includeed in this dataset are `r unique (pull(transit_df, line))`.The routes in this data set include `r unique (pull(transit_df,route1))`. The types of entrances described are `r unique(pull(transit_df,entrance_type))`. The data cleaning has involved janitor clean names, narrowing down the varaibles that we are interested in, and making the variables "entry" and "vending" clear. This data is not tidy.
 
 
 Answer the following questions using these data:
@@ -97,9 +97,9 @@ Answer the following questions using these data:
 How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here.
 
 ```{r}
-distinct(transit_df,station_name,line)
+nrow(distinct(transit_df,station_name,line))
 ```
-There are 465 station names in this dataset. 
+There are `r nrow(distinct(transit_df,station_name,line))` station names in this dataset. 
 
 How many stations are ADA compliant?
 
@@ -110,27 +110,34 @@ ada_compliant=
 select(transit_df, ada)
 
   summary(ada_compliant)
+  
 ```
 468 stations are ADA compliant.
 
 What proportion of station entrances / exits without vending allow entrance?
 
 ```{r}
+
 no_vending_df=
-filter(transit_df,vending=="NO")
-
-
-no_vending_entry_df=
-filter(no_vending_df,entry=="TRUE" )
-
-(nrow(no_vending_entry_df))/(nrow(no_vending_df))
+select(transit_df,vending,entry) %>% 
+filter(vending=="FALSE") %>%  
+summary(no_vending_df)
 
 ```
 
-The proportion is `r (nrow(no_vending_entry_df))/(nrow(no_vending_df))`. 
+The proportion is `r 69/183`. 
 
 
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
+
+```{r}
+tidy_transit_df=
+mutate(transit_df,route8=as.character(route8),route9=as.character(route9),
+                  route10=as.character(route10),route11=as.character(route11)) %>% 
+pivot_longer(route1:route2:route3:route4:route5:route6:route7:route8:route9:route10:route11, 
+             values_to="route_name") 
+```
+
 
 ##Problem 3
 
