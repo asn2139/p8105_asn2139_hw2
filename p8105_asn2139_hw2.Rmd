@@ -209,4 +209,5 @@ left_join(compiled_df,snp_df, by=c("month","year"))
 ```
 ## Description of Datasets and Resulting Dataset
 
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
