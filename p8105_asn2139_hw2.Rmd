@@ -97,9 +97,9 @@ Answer the following questions using these data:
 How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here.
 
 ```{r}
-distinct(transit_df,station_name)
+distinct(transit_df,station_name,line)
 ```
-There are 356 station names in this dataset. 
+There are 465 station names in this dataset. 
 
 How many stations are ADA compliant?
 
@@ -121,7 +121,7 @@ filter(transit_df,vending=="NO")
 
 
 no_vending_entry_df=
-filter(no_vending_df,entry=="YES" )
+filter(no_vending_df,entry=="TRUE" )
 
 (nrow(no_vending_entry_df))/(nrow(no_vending_df))
 
@@ -133,6 +133,10 @@ The proportion is `r (nrow(no_vending_entry_df))/(nrow(no_vending_df))`.
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
 
 ##Problem 3
+
+```{r}
+
+```
 
 Loading, cleaning, and making changes to pols_df
 ```{r}
@@ -169,7 +173,8 @@ unemploy_df=
   janitor::clean_names() %>% 
   pivot_longer(jan:feb:mar:apr:may:jun:jul:aug:sep:oct:nov:dec,
                values_to= "unemployed") %>% 
-  rename(month=name)
+  rename(month=name) %>% 
+  mutate(year=as.character(month))
 
 ```
 joining the datasets
@@ -178,5 +183,6 @@ joining the datasets
 compiled_df=
 left_join(pols_df,snp_df, by=c("month","year")) 
 
+left_join(compiled_df,snp_df, by=c("month","year")) 
 ```
 
