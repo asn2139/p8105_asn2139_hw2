@@ -132,20 +132,35 @@ Reformat data so that route number and route name are distinct variables. How ma
 
 ```{r}
 tidy_transit_df=
-mutate(transit_df,route8=as.character(route8),route9=as.character(route9),
+transit_df %>% 
+mutate(route8=as.character(route8),route9=as.character(route9),
                   route10=as.character(route10),route11=as.character(route11)) %>% 
-pivot_longer(route1:route2:route3:route4:route5:route6:route7:route8:route9:route10:route11, 
-             values_to="route_name") 
+  pivot_longer(route1:route11, 
+             names_to="route_name",
+             names_prefix="route",
+             values_to="route_number"
+             ) 
+
+tidy_a_df=
+  tidy_transit_df %>% 
+  distinct(line, station_name,.keep_all = TRUE) %>% 
+  filter(route_number=="A") %>% 
+  count()
+  
+ada_a_df=
+   tidy_transit_df %>% 
+  distinct(ada,line, station_name,.keep_all = TRUE) %>% 
+  filter(route_number=="A") %>% 
+ select(ada) %>% 
+  summary(ada_compliant)
 ```
 
+60 distinct stations serve the A train, and of those 17 are ada-compliant. 
 
 ##Problem 3
 
-```{r}
 
-```
-
-Loading, cleaning, and making changes to pols_df
+Reading, cleaning, and making changes to pols_df
 ```{r}
 pols_df=
   read_csv("./data/pols-month.csv") %>% 
@@ -159,6 +174,7 @@ pols_df=
     select(-prez_dem,-day) 
 ```
 
+Reading, cleaning, and making changes to snp_df
 ```{r}
 snp_df=
   read_csv("./data/snp.csv") %>% 
@@ -170,8 +186,7 @@ snp_df=
     relocate(year,month) %>% 
     select(-day) 
 ```
-
-import and tidy umemployment dataset
+Reading, cleaning, and making changes to unemploy_df
 
 ```{r}
 
@@ -192,4 +207,6 @@ left_join(pols_df,snp_df, by=c("month","year"))
 
 left_join(compiled_df,snp_df, by=c("month","year")) 
 ```
+## Description of Datasets and Resulting Dataset
+
 
